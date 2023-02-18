@@ -18,7 +18,7 @@ using SparseMatricesCSR: SparseMatricesCSR
 
 ε = 10^-6 # that is acceptable (even in forex) 
 a =  ones(11)
-ε = = eps(abs(float(one(eltya)))) # pick \eps 
+ε = eps(abs(float(one(eltya)))) # pick \eps 
 da= ε*a  #  we have a small step(s) `da`  
 
 # Do not Test of `symmetric` `positive-definite`,  `strided-matrix`
@@ -45,6 +45,7 @@ A  = [;;] # init an array
 
 A = ones(10) 
 B = ones(20)
+dotProduct = A.B #mat1 DOT mat2 #[Ensure no spaces are left between matricies]
 #
  A = complex.(rand(2, 2), rand(2, 2)) # Hermetian ( Dense, non-spaese by defaust ) # TODOO> help people 
 A = SparseMatricesCSR( length(A), length(A), A)
