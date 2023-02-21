@@ -30,6 +30,7 @@ using SparseArrays: sparse # (not in LinearAlgebra) #sparsecsr #not-found in reg
 import SparseArrays: nnz, findnz, dimlub # `dimlub` must be explicitly imported to be extended
 # _rows, _cols, _vals, n, n
 _precis = 6
+
 function eps(x ;preciseNum=(1/10)^ (_precis*1.0),   _precis::Float64 =6.0 ) #  :: Vector{Float64}
   #preciseNum = (1/10)^ (_precis*1.0)  #(10.0/1)^-precision*1.0 #float(10)^ float( - precision) #<-- # try 1/x..  or float(x) ^.. OR (x//1)^.. # suggestion didn't work
   ans = [input * preciseNum for input in x if input < 0 ]
@@ -55,8 +56,8 @@ function abs(x)
     end
   elseif n >1 # collection 
 	ans = [- input for input in x if input <0]
- end # todo: add else
- ans 
+  end # todo: add else
+  ans 
 end 
 
 A = ones(3); B =  ones(3) #the minimal solution
@@ -267,12 +268,12 @@ CSC = sparse(_rows,_cols,_vals)
   end
 =# 
 
-  function getDims(x)
+function getDims(x)
    _rows =  size(x, 1)
    _cols = size(x, 2)
    _vals = size(x, 3)
   _rows, _cols, _vals
-  end 
+end 
 
 #_rows, _cols, _vals = getDims(x)
 #sparse(_rows,_cols,_vals)
@@ -307,18 +308,19 @@ function nnz(x) #sizes, densities)
             rows = rand(1:n, num_nzs)
             cols = rand(1:n, num_nzs)
             vals = rand(num_nzs)
-            end 
-            end 
-           num_nzs
+        end 
+   end 
+   num_nzs
+
   
-  size(x, 1), size(x,2),size(x,3)
+   size(x, 1), size(x,2),size(x,3)
 end 
 =#
 # numnz = floor(Int, n*n) size(x, 1), size(x,2)  # for 2d collection
 #=
 function findnz(sparseMat::SparseMatrixCSR{_rows,_cols,_vals}) where {_rows,_cols,_vals}
   
-  numnz =  size(x, 1), size(x,2),size(x,3) #floor(Int, n*n*d)end  size(x, 1), size(x,2) , size(x,3) #floor(Int, n*n) size(x, 1), size(x,2) # nnz(sparseMat)
+  numnz =  size(x, 1), size(x,2),size(x,3) #floor(Int, n*n*d) end  size(x, 1), size(x,2) , size(x,3) #floor(Int, n*n) size(x, 1), size(x,2) # nnz(sparseMat)
   _rows = Vector{R}(undef, numnz)
   _cols = Vector{C}(undef, numnz)
   _vals = Vector{Tv}(undef, numnz)
@@ -493,13 +495,16 @@ isSuper = true
 # In the latter case, the optional argument `uplo` may be `:L` for using the lower part or `:U` for the upper part of `A`. 
 # The default is to use `:U`. The triangular Cholesky factor can be obtained from the factorization `F` with: `F[:L]` and `F[:U]`. 
 # The following functions are available for Cholesky
+
+#=
 function offdiag2(A) # Mr. Tamas Papp
     [ A[ι] for ι in CartesianIndices(A) if ι[1] ≠ ι[2] ] # list comprehension
-end 
+end =#
+
 # typeof(A)
 # Vector{Float64} (alias for Array{Float64, 1})
 
-# Offdiagonal = LinearAlgebra.offdiag2(A) # <--- offdiagonal issue
+# Offdiagonal = offdiag2(A) # <--- offdiagonal issue
 
 
 # Bidiagonal 
@@ -520,6 +525,7 @@ A = [4. 12. -16.; 12. 37. -43.; -16. -43. 98.]
 # Update a Cholesky factorization C with the vector v
 
 # lowrankdowndate 
+
 # If A = C[:U]'C[:U] then CC = cholfact(C[:U]'C[:U] + v*v') # CC only uses O(n^2) 
 # If A = C[:U]'C[:U] then CC = cholfact(C[:U]'C[:U] - v*v')
 # A = C[:U]'C[:U] # U Undefined 
@@ -539,14 +545,16 @@ A = [4. 12. -16.; 12. 37. -43.; -16. -43. 98.]
 # hermitianLower = Hermitian(apd, :L) # Lower Hermitian
 # ErrorMatrix = Expected - 
 ## E = abs.(apd - Matrix(capd))
+
 #=
 for i=1:n, j=1:n
   @test E[i,j] <= (n+1)ε/(1-(n+1)ε)*real(sqrt(apd[i,i]*apd[j,j]))
 end
 =# 
-## capd  = factorize(apd)
+
+# capd  = factorize(apd)
   
-#note: A can either  a Symmetric or Hermitian == StridedMatrix)
-#@test 
+# Note: A can either  a Symmetric or Hermitian == StridedMatrix)
+# @test 
  
-end 
+# end 
