@@ -45,7 +45,7 @@ ep = eps(x)
 function abs(x)
 	 
   ans = 0
-	 n = length(x)
+  n = length(x)
 	 
   if n == 1 # scalar
     ans = x
@@ -90,6 +90,7 @@ offset = Bi - 1
 
  I_up, J_up, V_up
 end
+
  """
     sparsecsr(args...)
     sparsecsr(::Val{Bi},args...) where Bi
