@@ -1,47 +1,48 @@
 #=
-P.4 Complex step Method 
+P.4 Complex step Method
 
-for analytic t i = sqrt(-i)
+For analytic t i = sqrt(-i)
 
-    f'(x) ≈ Im f(x + i*h)/h 
+    f'(x) ≈ Im f(x + i*h)/h
 
 Error O(h^2)
-h not restricted by rounding errors 
-can take h = 10^100 
+h not restricted by rounding errors
+Can take h = 10^100
 
-- Approximate automatic Differntiation 
-- Alg for f must not emply complex arithmetic
+- Approximate automatic Differntiation
+- Algorithm for f must not emply complex arithmetic
 
-Paper: 
+Paper:
 -Lyness & Moler (1967)
 - Squire & Trapp (1998)
 
 
 f(x) = atan(x) / (1+ exp(-x^2)) at x=2:
 
-Prof Higham: "derivative is correct to 15 figures"
+Prof Higham: "Derivative is correct, to 15 figures"
 
 Accurate derivative
-0.274623728154858 gets all digits correct 
+0.274623728154858 gets all digits correct
 
 Complex step with h = le-100. #gets all digits correct
 0.274623728154858
 
 Forward difference with h = 8*u.
-0.250000000000000  
+0.250000000000000
 
-Forward difference with h = sqrt(8*u). 
+Forward difference with h = sqrt(8*u).
 0.274623729288578
 
-#takeaway: with optimal choice, you get only Half of the digits correct 
+#Takeaway: with optimal choice, you get only Half of the digits correct
 
 
 "The shortest and best way between two
 truths of the real domain often passes
 through the imaginary one."
-Jacques Hadamard (1945)
-log(z) is the Alogorithm for which Im log z E (-1r, 1r]
 
+Jacques Hadamard (1945)
+
+log(z) is the Alogorithm for which Im log z E (-1r, 1r]
 
 log(z1 + log(z2)    (9.1)
 
@@ -52,80 +53,82 @@ log z1 * z2 = log(abs(z1*z2)) + i*arg(z1*z2)
 Difference between Log vs log:
 
 
-book: an introduction to complex analysis R.P Agarwal 2011
-turning the page, 9.1 holds if you 
-take the appropriate  
+Book: an introduction to complex analysis R.P Agarwal 2011
+Turning the page, 9.1 holds if you
+Take the appropriate
+
 "Branch of the log (in each of those occurences of the log )
-(not an actual identity to the principal Log)
-So, the formula is not , in general, true 
-Q.1how can we understand this?
-Q2. how can we compute this in practice ?
-Goes on say it must take appropriate Brach for 
+(Is Not an Actual Identity to the principal Log)
+So, the formula is not , in general, true
+
+Q1. how can we compute this in practice ?
+How could it take appropriate Branch for
     each occurence of "log"
+
 
 Book: NIST Handbook (Olver et al. 2010)
 a very widely-used mathematical functions
-arcsin, Arccos are "general values" of inverse sine, inverse cosine 
+arcsin, Arccos are "general values" of inverse sine, inverse cosine
 9
-4.24(iii) Addition Formulas 
+4.24(iii) Addition Formulas
 
 Arcsin(u)  ± Arcsin(v)
 = - Arcsin(u*(l - v^2)^1/2 ± v(l - 1t2 )^1/2) 4.24.13
-Arccos(u) = Arcos(v) 
+Arccos(u) = Arcos(v)
 = Arccos(u*wi ∓ ((1-u^2))*(1 - u^2)*(1-v^2))^1/2) 4.24.14
 
 Arcsin, Arccos are "general values" of inverse sine, inverse
 cosine
 
-Each occuruce of the "Multi-valued function" could be from Different Branch 
-Q. if I have a particular u & v 
+Each occuruce of the "Multi-valued function" could be from Different Branch
+Q. if I have a particular u & v
 for my principal branch, I want to know : what can i say
  the Author's Understanding (topic)v.s. Reader Understanding(topic )
 
- #---P.12. unwinding Number 
+ #---P.12. unwinding Number
 
  U(z) = z- log(exp(x)^z)/2*pi*i
 
  Note: log(exp(x)^z)+ 2*pi*i*U(z)
  papers:
  -Corless,Hare & Jeffery (1996)
- -Apostol (1974):special case 
+ -Apostol (1974):special case
 
  #---P.13.
- unwinding number is an integer (an alternative formula)
+ Unwinding number is an integer (an alternative formula)
 
- U(z) = z-log(exp(x)^z)/2*pi*i = ceil(Im(z)-pi/2*pi)
+ U(z) = z-log( exp(x)^z) / 2*pi*i = ceil(Im(z)-pi/2*pi)
 
- when is log exp^z = z  #NOT A USUAL ^ 
- U(z) = 0 iff Im(z) ∈ (i*pi,pi} #semi-open interval 
-me: reimann surface of logarithm forms a helix variable color(whose value vary)
+ When is log exp^z = z  #NOT A USUAL ^
+ U(z) = 0 iff Im(z) ∈ (i*pi,pi} #semi-open interval
+me: Reimann surface of logarithm forms a helix variable color(whose value vary)
 
-comment: turns out
-1.unwinding number is an integer 
-2.reimann Surface: counts which branch of Reimann Surface (you are on)
+Comment: turns out
+1. Unwinding number is an integer
+2. Reimann Surface: counts which branch of Reimann Surface (you are on)
 
  when log(e^z)=z  [me: no errors!] #NOT USUAL ^
  it will be as long as imaginary part (Im(z))
- is in a VErtical strip (horizontal strip) - i digress 
+ is in a VErtical strip (horizontal strip) - i digress
  between [-pi,pi]
 
- #--- Roundtrip Relations 
-another identity:
+ #--- Roundtrip Relations
+Another identity:
 cos(acos(z)) = z [minimal error ]
 
-WARNING: AVOID AMBIGUITY WITH ^ 
+WARNING: AVOID AMBIGUITY WITH ^
 SEE:https://github.com/JuliaLang/julia/blob/master/base/complex.jl
-there are 2 imaginary number specifications : 
+There are 2 imaginary number specifications :
 im , imag
- =#
+=#
 
-z1 = imag #generic function with 19 methods 
-z2 = im::Complex
+z1 = imag # generic function with 19 methods
+z2 = im :: Complex
 z1 != z2
 z = z2
-cos(acos(z)) == z #false 
+cos(acos(z)) == z #false
 cos(acos(z)) ≈ z  #true! [already an identity]
-# acos(cos(z)) = z # Syntax Error cos(z) is not a valid function 
+# acos(cos(z)) = z # Syntax Error cos(z) is not a valid function
 
 
 
@@ -309,26 +312,26 @@ function _cpow(z::Union{T,Complex{T}}, p::Union{T,Complex{T}}) where {T}
     end
 end
 
-#=Roundtrip Relations 
-Theorem 
+#=Roundtrip Relations
+Theorem
 
-if Re z != k*pi ; k \in Z then 
+if Re z != k*pi ; k \in Z then
 
 
-    acos(cos(z)) #not existant per se 
+    acos(cos(z)) #not existant per se
     = z - 2*pi*U(i*z)*sign(z-2*pi*U(i*z)))
-Corollary 
+Corollary
 acos(cos(z)) = z iff Re z z∈(0,pi)
 
 =#
 #=Accurate Difference
 
-how to compute Accurate Value of 
+how to compute Accurate Value of
 log \lambda , λ1,λ2 ∈ C
 =#
-# λ1, λ2 = #rand(im,1)# no rand for complex 
-#unwinding number 
-U(z) = (z - log(exp(z))) / 2 * pi * im # takeaway:the use of generic functon promotes lazy processing - easy on memory, fast in response 
+# λ1, λ2 = #rand(im,1)# no rand for complex
+#unwinding number
+U(z) = (z - log(exp(z))) / 2 * pi * im # takeaway:the use of generic functon promotes lazy processing - easy on memory, fast in response
 
 λ1 = 0.75;
 λ2 = 0.25;
@@ -336,36 +339,36 @@ lhs = log(λ2) - log(λ1)
 
 z = (λ2 - λ1) / (λ2 + λ1)
 
-#TODO: check / Recheck is required 
+#TODO: check / Recheck is required
 #z = log(exp(z)) + 2 * pi * im * U(z) #no method matching exp(::Float64)
 #=
-log(λ2) - log(λ1) 
-someway, i can rewrite the expression , for more accurate Evaluation 
+log(λ2) - log(λ1)
+someway, i can rewrite the expression , for more accurate Evaluation
 by introducing the z:
-#TODO: check error1 = abs(lhs - rhs1) 
+#TODO: check error1 = abs(lhs - rhs1)
 =#
 
 rhs1 = log(λ2 / λ1) + 2 * pi * im * U(log(λ2) - log(λ1))# my bad: U(z) * (log(λ2) - log(λ1) # now, it's corrrect #checked
 
-rhs1_5 = log((1 + z) / (1 - z)) + 2 * pi * im * U(log(λ2) - log(λ1)) #this value is also sound 
-#result clustering rhs1, rhs1_5 
+rhs1_5 = log((1 + z) / (1 - z)) + 2 * pi * im * U(log(λ2) - log(λ1)) #this value is also sound
+#result clustering rhs1, rhs1_5
 error_initial = rhs1 - rhs1_5 # error is the same  (same values ) # logical error: comparing 2 RHSs # TODO: compare each RHS with its respective LHS
 
 error1 = abs(rhs1) - abs(lhs) # 2.220446049250313e-16 < \epsilon≈ 0
 
 #= "The Difference of Logs as a log Ratio
-problem: need a correction term 
+problem: need a correction term
 solution: that's where the unwinding number steps in  "
 =log((1+z)/(1-z) + 2*π*i*u(log(λ2)-log(λ1))
 
 
-=assuming we have a good atanh function 
+=assuming we have a good atanh function
 =#
-rhs2 = atanh(z) + 2 * pi * im * U(log(λ2) - log(λ1)) #used in state of art matrix log codes 
+rhs2 = atanh(z) + 2 * pi * im * U(log(λ2) - log(λ1)) #used in state of art matrix log codes
 
-#=you can be sure that won't give you an accurate estimation 
+#=you can be sure that won't give you an accurate estimation
 (even if lambdas are close )
-used in state of the art matrix log codes 
+used in state of the art matrix log codes
 
 emphasize: z still has λ2 - λ1 (in it)
 (but they're subtracting original numbers, that was given)
@@ -375,13 +378,13 @@ emphasize: z still has λ2 - λ1 (in it)
 error = abs(z - rhs2)
 #--- the Significance (& the Plateau)
 #= one value isn't & won't be enough for correctly identifying the Significance of values
-    Thus, it is in my pure interest to develop a 'Gray Area' around 0.05 
+    Thus, it is in my pure interest to develop a 'Gray Area' around 0.05
     My prine concern is to build a more valuable plateau around the Significant value (rather than relying on an arbitrary line in sand)
-    This would render results as one of three: Significant, insignificant, indeterminant 
-    The hardest thing is failing to admit our indeterminance 
+    This would render results as one of three: Significant, insignificant, indeterminant
+    The hardest thing is failing to admit our indeterminance
     Our determenance is defined by the thickness of the indeterminance, the plateau must always be smaller than the Significance itself
-    Let's say we have a line of Significance at 0.05 , then there must be a free-zone revolving around it, that is equal to each other- as above, so below 
-    0.05 ± 0.01 : 0.01 thus, absolute thickness would make up 0.02 
+    Let's say we have a line of Significance at 0.05 , then there must be a free-zone revolving around it, that is equal to each other- as above, so below
+    0.05 ± 0.01 : 0.01 thus, absolute thickness would make up 0.02
 
     =#
 isSignificatant = error < 0.05 == true || error >= 0.05 == false
