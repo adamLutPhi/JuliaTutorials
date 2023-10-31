@@ -1,109 +1,251 @@
-#--- Chain Rule
+#--- Chain Rule Nick Higaham - @nickhigham
 
-
-g(x)=(f3 *(f2(x)f1(x)) 
 #=
-chain rules give  #TODO: a loop on allJacobians 
+    function count =
+=#
+# 1. g(x): loop(of Jacobians)
+# g'(x) = Jf(x) : the  `Jacobian Matrix`
 
-@nickhigham:
-suppose you have a function g(of x) - 
-    a function of Composition 
-  (of other functions: f3, f2, f1)      
-  each f maps Vectors (of length nk -to-> nk+1)
-1.so the  
-(1st) derivative of g = Jacobian Matrix 
+# Chain Rule
+g(x)=( f3 * ( f2(x) f1(x) )
+
+#=
+
+Chain rule gives...  #TODO: a loop on allJacobians
+
+
+Suppose you have a function g(of x) -
+
+1.a function of Composition
+2. of other functions: f3, f2, f1)
+3. each f maps some Vectors (of length n [k] -to-> n [ k+1 ] )
+
+1.so the
+(the 1st) Derivative of g : is a  `Jacobian Matrix`
+
 2.if Apply the chain Rule:
 I'll get the expression (Jf):
-the product of 3 Jacobians 
-Evaluated at the appropriate arguments
 
-Question: 
-if I want to get the Jacobian (J)
-  which order should I take 
+Note: the Product of 3 Jacobians
+Evaluated at the `Appropriate Arguments`
+
+
+Q1.If I want to get the Jacobian (J)
+ - In which order should I take
   J3 J2 J1 or J1, J2, J3 ?
-
-  comes up in automatic differentiation:
-  the difference between the first mode 
+A1.
+ It comes up in `Automatic Differentiation AD` :
+  the difference between the first mode
 
 Reverse mode (output) & forward (input )
 
+So if i want to get the derivative of g
 
- 
-so if i want to get the derivative of g 
+#-- Testing Area:
 
-#-- testing Area:
 
 for i in enumerate(n)
 
-  if i <2 
+  if i < 2
     return jf(i,)
+    end
+end
 
 =#
-#Composition
-Jg(x) =  Jf3(f2*(f1(x)))*Jf2(f1(x))*Jf1(x) ;
+for i in enumerate(n)
 
-#---Todo implement Jacobian too     
+  if i < 2
+    return jf(i,)
+    end
+end
+
+#Composition (of functions )
+
+Jg(x) =  Jf3(f2 * (f1(x))) * Jf2(f1(x)) *Jf1(x) ;
+
+#---Todo implement Jacobian too
 
 #=y Symbolics.substitute
 https://discourse.julialang.org/t/how-to-evaluate-substitute-numerical-values-of-params-n-states-a-jacobian-in-modelingtoolkit-using-generate-jacobian-or-calculate-jacobian/71466
 
-Solution 
+Solution
 yewalenikhil65
-Nov 2021 
-thanks @baggepinnen 
-i am doing currently following
+Nov 2021
+@Credits: @baggepinnen
+I am doing currently following
 
-states ,parameters
+states , parameters
 i == 1
-x1map = 
+x1map =
 
-warning: ModelingToolkit uses ZygoteRules
-plus next line it uses Symbolics too writer seems 
-can we do better ? 
-=# 
-#= Requires ModelingToolkit, Symbolics, Zygote (3 in 1) 
+Warning: ModelingToolkit uses `ZygoteRules`
+
+Plus next line it uses Symbolics too writer seems
+Can we do better ?
+
+@Credits gladnde
+
+support SVector but it isn’t managing the conversion.
+
+function BicycleDynamics(plant::Bicycle, x::SVector{5, T}, u::SVector{2, T}) where {T <: Real}
+    # of the traction wheel
+    turning_radius = plant.wheelbase / tan(x[4])
+    translational_velocity = x[5]
+    angular_velocity = x[5] / turning_radius
+    return SVector(cos(x[3]), sin(x[3]), angular_velocity, u[1], u[2])
+end
+
+bike = MakeBike()
+
+ad_adapter(x::SVector{7, T}) where {T <: Real} = BicycleDynamics(bike, x[1:5], x[6:7])
+ad_point = SVector{7, Float64}(1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0)
+
+#Warning: uses `ForwardDiff` package
+ForwardDiff.jacobian(ad_adapter, ad_point)
+
+
+@Credit
+
+To expand on this, if what someone wants a callable function, j, that computes the Jacobian then this should work:
+
+julia> f(x,y)=[x^2 + y^3-1, x^4 - y^4+ x*y]
+julia> j(x)=ForwardDiff.jacobian(x->f(x[1],x[2]), x)
+julia> j([0.5;0.5])
+2x2 Array{Float64,2}:
+
+@Credits jchen975 (May 2020)
+=#
+
+""" Functors
+@Credit: GeeksforGeeks.com
+"Functors, also known as
+function objects, are objects that behave like functions"
+treated as a function, can be used to encapsulate a set of instructions
+
+"""
+function f((x))
+
+
+    F = zeros(3)
+
+    F[1] = x[1]^2 + x[3]
+    F[2] = x[1] + x[2]
+    F[3] = x[2]^2 + x[3]^2
+
+    return F
+end
+
+#=
+@Credits yewalenikhil65 (Nov 2021)
+Requires ModelingToolkit, Symbolics, Zygote
+x₀map = states(odesys) .=> x0
+
+pmap  = parameters(odesys) .=> ps
+jac = substitute.( ModelingToolkit.calculate_jacobian(odesys), (Dict([x₀map;pmap]),) )
+jac = Symbolics.value.(jac)
+
 pmap = nothing ;jac=nothing ;x1=0;ps =;
 x₀map = states(odesys) .=> x1
 pmap  = parameters(odesys) .=> ps
 jac = substitute.( ModelingToolkit.calculate_jacobian(odesys), (Dict([x₀map;pmap]),) )
 jac = Symbolics.value.(jac);
+
+@baggepinnen (Nov 2021)
+#requires Symbolics
+Try Symbolics.substitute
+
 =#
-#=the key
+
+#=the key:
+You only need function f(x)
+
+Defining F as zeros(3) restricts its entries to be Float64s,
+Whereas to use `ForwardDiff`
+They need to be `Duals`.
+
+Change it to F = similar(x) or F = zeros.(x)
+#source: https://discourse.julialang.org/t/jacobian-of-a-multivariate-function/21131/10
+=#
+
+#=@Credits: dpsanders
+dpsanders
 You only need function f(x)
 
 Defining F as zeros(3) restricts its entries to be Float64s, whereas to use ForwardDiff
 they need to be Duals.
 
-Change it to F = similar(x) or F = zero.(x)
-#https://discourse.julialang.org/t/jacobian-of-a-multivariate-function/21131/10
-=#
+Change it to F = similar(x) or F = zeros.(x)
 
-#=@dpsanders 
+to get something of the correct type:
 
+function f(x)
+    F = zeros.(x)
+
+    F[1] = x[1]^2 + x[3]
+    F[2] = x[1] + x[2]
+    F[3] = x[2]^2 + x[3]^2
+
+    return F
+end
 to get something of the correct type: =#
 
+"""https://discourse.julialang.org/t/jacobian-of-a-multivariate-function/21131/10
+Change it to F = similar(x) or F = zeros.(x)
+
+to get something of the correct type:
+"""
+function f(x)
+
+    F = zeros.(x)
+
+    F[1] = x[1]^2 + x[3]
+    F[2] = x[1] + x[2]
+    F[3] = x[2]^2 + x[3]^2
+
+    return F
+end
 
 
+#--- Threads
 
-#--- chain rule gives 
+using Base.Threads
+nthreads()
+@threads for i = 1:6
+    println("Hello from thread: ", T)
+#--- chain rule gives
 #=
 function _f(x)
-  F = similar(x) #zero.(x)#small perturbation
+  F = similar(x) #zeros.(x)#small perturbation
 
   F[1] = x[1]^2 + x[3] # function here
-  F[2] = x[1] + x[2] #another function 
+  F[2] = x[1] + x[2] #another function
   F[3] = x[2]^2 + x[3]^2 #third one too
 
   return F
 end
 =#
-g(x) = f3(f2(f1(x)))   # fk R^n => R^nk+1;
+#=@Credits carstenbauer (Jan 13th)
+> export JULIA_NUM_THREADS=6
+> julia
 
-Jg(x) = Jf3(f2(f1(x)))*Jf2(f1(x))*Jf1(x);
+or
+JULIA_NUM_THREADS = 6
+julia
+
+or
+JULIA_NUM_THREADS = 6
+=#
+JULIA_NUM_THREADS = 6
+
+#--- Jacobians
+
+g(x) = f3( f2(f1(x) ))   # fk R^n => R^nk+1;
+
+Jg(x) = Jf3( f2( f1(x) )) * Jf2(f1( x )) * Jf1( x );
 
 #=
-Q. does Jg as (Jf3*Jf2)*Jf1 or Jf3*(Jf2*(Jf1)) 
-me: i.e. is it forward or backward (check also nick-Higham juliacon 2018)
+Q. does Jg as (Jf3*Jf2)*Jf1 or Jf3*(Jf2*(Jf1))
+me: i.e. is it forward or backward (see also: nick-Higham juliacon 2018)
 
 https://github.com/JuliaDiff/SparseDiffTools.jl
 In addition, the following forms allow you to provide a gradient function g(dy,x) or dy=g(x) respectively:
@@ -133,7 +275,7 @@ numback_hesvec!(dy,f,x,v,
 
 numback_hesvec(f,x,v)
 
-# Currently errors! See https://github.com/FluxML/Zygote.jl/issues/241 #says about Zygote 
+# Currently errors! See https://github.com/FluxML/Zygote.jl/issues/241 #says about Zygote
 autoback_hesvec!(dy,f,x,v,
                      cache2 = ForwardDiff.Dual{DeivVecTag}.(x, v),
                      cache3 = ForwardDiff.Dual{DeivVecTag}.(x, v))
@@ -147,23 +289,34 @@ JacVec(f,x::AbstractArray;autodiff=true)
 HesVec(f,x::AbstractArray;autodiff=true)
 HesVecGrad(g,x::AbstractArray;autodiff=false)
 
-#These all have the same interface, where J*v utilizes the out-of-place Jacobian-vector or Hessian-vector function, whereas mul!(res,J,v) utilizes the appropriate in-place versions. To update the location of differentiation in the operator, simply mutate the vector u: J.u .= ....
+#These all have the same interface,
+# Whereas J*v utilizes the out-of-place Jacobian-vector or Hessian-vector function,
+#whereas mul!(res,J,v) utilizes the appropriate in-place versions.
+# To update the location of differentiation in the operator,
+# simply mutate the vector u: J.u .= ....
+#mutating vector u:
+u: J.u
+#or
+mul!(res, J, v)
 
-#=Chain Rule Modes of differentiation - Prof. Nick Higham 
 
- 1.Automatic Differentiation (AD) 
- 2.Forward (mode)
+#= Chain Rule Modes of differentiation - Prof. Nick Higham
+
+ 1.Automatic Differentiation (AD)
+ 2.Forward mode
  3.Reverse mode
 
-Provides a  references 
-G.Strang Linear Algebra & Learning from Data 
-Wellesley-Cambridge Press 2018 
-http://math.mit.edu/~gs/Learningfromdata 
+Reference:
+G.Strang Linear Algebra & Learning from Data
+Wellesley-Cambridge Press 2019
+see also: @Credits: Gilbert Strang - Linear Algebra and Learning From Data (2019)
+https://math.mit.edu/~gs/learningfromdata/
 
-#Final inference:
-no body has a clear idea about Automatic differentiation - and is still 
-a ripe  area of Research  
-
-"No body knows anything about anything"
-
+#=
+Wellesley-Cambridge Press 2019
 =#
+=#
+rowl = [2 2 3; 3 4 7]'
+cols= [2 2 3 ; 3 4 7]'
+x1 = [2 2 3]'
+x2 = [3 4 7]'
