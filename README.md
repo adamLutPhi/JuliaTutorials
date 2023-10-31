@@ -1,5 +1,5 @@
 # JuliaTutorials
 
-A strict Repository, for Tutorials in Julia 
+A Repository, of Tutorials in Julia 
 
 Provided by Julia Professionals &amp; Professors, from JuliaCons
